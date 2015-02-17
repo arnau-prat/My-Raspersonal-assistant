@@ -22,17 +22,13 @@ class Microphone:
 
     def passiveListen(self,persona):
 
-        CHUNK = 1024; RATE = 16000; THRESHOLD = 50; LISTEN_TIME = 3
+        CHUNK = 8192; RATE = 44100; THRESHOLD = 50; LISTEN_TIME = 5
 
         didDetect = False
         
         # prepare recording stream
         p = pyaudio.PyAudio()
-        stream = p.open(format=pyaudio.paInt16,
-                             channels=1,
-                             rate=RATE,
-                             input=True,
-                             frames_per_buffer=CHUNK)
+        stream = p.open(format=pyaudio.paInt16, channels = 1, rate=RATE, input=True, input_device_index = 1, frames_per_buffer=CHUNK)
 
         # stores the audio data
         all =[]

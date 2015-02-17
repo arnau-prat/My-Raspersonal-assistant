@@ -4,6 +4,12 @@ import os
 import tempfile
 import subprocess
 import gtts
+import sys
+
+if sys.platform == 'darwin':
+	PLAYER = 'afplay';
+else:
+	PLAYER = 'mpg123';
 
 class TTSEngine:
 
@@ -14,7 +20,7 @@ class TTSEngine:
         self.language = language
     
     def play(self,filename):             
-        cmd = ['afplay', str(filename)]
+        cmd = [PLAYER, str(filename)]
         with tempfile.TemporaryFile() as f:
             subprocess.call(cmd, stdout=f, stderr=f)
             f.seek(0)
