@@ -30,11 +30,11 @@ while True:
     	# Display the resulting frame
     	cv2.imshow('Video', frame)
 
-   	else:
-
-   		# Relative position of the faces
+    else:
+   		
+        # Relative position of the faces
    		for (x, y) in faces:
-   			print 'Position:('+x','+y+')'
+   			print "Position:("+str(x)+","+str(y)+")"
 
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
