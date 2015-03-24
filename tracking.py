@@ -1,6 +1,8 @@
 import cv2
 import sys
 
+DEBUG = FALSE
+
 faceCascade = cv2.CascadeClassifier("faces.xml")
 
 video_capture = cv2.VideoCapture(0)
