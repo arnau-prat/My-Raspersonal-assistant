@@ -7,9 +7,12 @@ DEBUG = True
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(18,GPIO.OUT)
-pwm = GPIO.PWM(18,100)
-pwm.start(0)
-pwm.ChangeDutyCycle(11)
+pwmX = GPIO.PWM(18,100)
+pwmX.start(0)
+pwmX.ChangeDutyCycle(11)
+pwmY = GPIO.PWM(19,100)
+pwmY.start(0)
+pwmY.ChangeDutyCycle(11)
 
 offSet =0
 
@@ -26,8 +29,6 @@ while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
 
-    
-
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = faceCascade.detectMultiScale(
@@ -38,26 +39,19 @@ while True:
         flags=cv2.cv.CV_HAAR_SCALE_IMAGE
     )
 
-    if DEBUG:
-
-    	# Draw a rectangle around the faces
-    	for (x, y, w, h) in faces:
-		
-        	cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-		print "Position:("+str(x+w/2)+","+str(y+h/2)+")"
-		position = 90-60*((x+w/2-width/2)/width)
-		print "result: "+ str(position)
-		pwm.ChangeDutyCycle(position/10+2.5)
-		offSet = offSet + x - posMid
-    	# Display the resulting frame
-    	cv2.imshow('Video', frame)
-
-
-    else:
-   		
-        # Relative position of the faces
-   		for (x, y) in faces:
-   			print "Position:("+str(x)+","+str(y)+")"
+    # Draw a rectangle around the faces
+    for (x, y, w, h) in faces:
+        if DEBUG:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.imshow('Video', frame)
+            print "Pos:(" + str(x + w/2) + "," + str(y + h/2) + ")"
+        #new servo position on the x axis
+        positionX = 90 - 60 * ((x + w/2 - width/2)/width)
+        pwmX.ChangeDutyCycle(positionX/10 + 2.5)
+        #new servo position on the x axis
+        positionY = 90 - 60 * ((y + h/2 - height/2)/height)
+        pwmX.ChangeDutyCycle(positionY/10 + 2.5)
+        # Display the resulting frame
 
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
