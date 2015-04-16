@@ -22,7 +22,11 @@ class Microphone:
 
     def passiveListen(self,persona):
 
-        CHUNK = 8192; RATE = 44100; THRESHOLD = 50; LISTEN_TIME = 5
+        CHUNK = 1024
+        FORMAT = pyaudio.paInt16
+        CHANNELS = 1
+        RATE = 16000
+        RECORD_SECONDS = 5
 
         didDetect = False
         
