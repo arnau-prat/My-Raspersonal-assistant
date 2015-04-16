@@ -28,7 +28,7 @@ class Microphone:
         
         # prepare recording stream
         p = pyaudio.PyAudio()
-        stream = p.open(format=pyaudio.paInt16, channels = 1, rate=RATE, input=True, input_device_index = 1, frames_per_buffer=CHUNK)
+        stream = p.open(format=FORMAT, channels = 1, rate = RATE, input = True, input_device_index = 0, frames_per_buffer = CHUNK)
 
         # stores the audio data
         all =[]
