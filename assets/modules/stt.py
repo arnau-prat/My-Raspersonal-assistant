@@ -17,7 +17,7 @@ class STTEngine:
         self.language = language
         self.apiKey = apiKey
 
-    def transcript(self,audioName):
+    def transcript(self,audioName='voice.flac'):
         f = open(audioName)
         audioFile = f.read()
         f.close()
@@ -26,20 +26,20 @@ class STTEngine:
         req = urllib2.Request(googl_speech_url, data=audioFile, headers=hrs)
         p = urllib2.urlopen(req)
         rawData = p.read()
-        print rawData
         textFileClean = rawData.replace("""{"result":[]}""", '')
-        data = json.loads(textFileClean)
-        parsedData = data['result'][0]['alternative'][0]['transcript'] 
-        os.remove('voice.flac')
+        if textFileClean != '\n':
+            data = json.loads(textFileClean)
+            parsedData = data['result'][0]['alternative'][0]['transcript']
+        else:
+            parsedData = "" 
+        os.remove(audioName)
         return parsedData
 
+"""
 if __name__ == '__main__':
-
     stt = STTEngine()
-
     os.system("sox -d voice.flac silence 1 0.1 5% 1 1.0 5%")
-    
     print stt.transcript('voice.flac')
-
+"""
   
 

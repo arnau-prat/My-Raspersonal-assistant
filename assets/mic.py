@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import pyaudio
 import struct
 import math
@@ -5,7 +8,6 @@ import wave
 import urllib  
 import urllib2 
 import os
-
 
 class Microphone:
 
@@ -22,17 +24,13 @@ class Microphone:
 
     def passiveListen(self,persona):
 
-        CHUNK = 1024; RATE = 16000; THRESHOLD = 50; LISTEN_TIME = 3
+        CHUNK = 1024; RATE = 16000; THRESHOLD = 30; LISTEN_TIME = 5
 
         didDetect = False
         
         # prepare recording stream
         p = pyaudio.PyAudio()
-        stream = p.open(format=pyaudio.paInt16,
-                             channels=1,
-                             rate=RATE,
-                             input=True,
-                             frames_per_buffer=CHUNK)
+        stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=CHUNK)
 
         # stores the audio data
         all =[]
@@ -50,6 +48,7 @@ class Microphone:
             stream.stop_stream()
             stream.close()
             return False
+
 
         # append all the chunks
         all.append(input)
@@ -77,7 +76,8 @@ class Microphone:
         rawData = urllib2.urlopen(req).read()
 
         if persona in rawData:
-            os.system ('afplay client/beep.mp3')
+	    os.system("killall -9 mplayer")
+            os.system ('mpg321 assets/beep.mp3')
             return True
 
         return False

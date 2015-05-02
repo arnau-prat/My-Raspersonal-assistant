@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import os
 import tempfile
@@ -14,7 +15,7 @@ class TTSEngine:
         self.language = language
     
     def play(self,filename):             
-        cmd = ['mpg123', str(filename)]
+        cmd = ['mpg321', str(filename)]
         with tempfile.TemporaryFile() as f:
             subprocess.call(cmd, stdout=f, stderr=f)
             f.seek(0)
@@ -27,11 +28,9 @@ class TTSEngine:
         tts.save(tmpfile)
         self.play(tmpfile)
         os.remove(tmpfile)
-        
-"""
+              
+"""        
 if __name__ == '__main__':
-
     engine = TTSEngine()
-
     engine.say("This is a debuging test")
 """

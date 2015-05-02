@@ -1,4 +1,4 @@
-#!/usr/bin/python
+    #!/usr/bin/python
 from datetime import datetime, date, time, timedelta
 import time
 import pytz
@@ -14,6 +14,7 @@ class Alarm:
     def __init__(self):
         self.getAlarm = None
         self.cest = pytz.timezone('Europe/Madrid')
+        signal.signal(signal.SIGALRM, self.handler)
 
     def handler(self, signum, stack):
         print 'Alarm :', datetime.today().strftime("It's %I:%M:%S%p")
@@ -40,10 +41,7 @@ class Alarm:
             else:
                 return False
 
-            signal.signal(signal.SIGALRM, self.handler)
             signal.alarm(tim)
-
-            
 
             d = datetime.now(tz=self.cest) # timezone?
             d = d + timedelta(seconds=tim)
@@ -71,7 +69,6 @@ class Alarm:
             if tim < 0:
                 tim = 24*3600 + tim
 
-            signal.signal(signal.SIGALRM, self.handler)
             signal.alarm(tim)
 
             d = datetime.now(tz=self.cest) # timezone?
@@ -92,39 +89,37 @@ class Alarm:
         else:
             return False
 
+    def think(self, text):
+        if "timer" in text:
+            #Ex -> Set timer of 10 minutes
+            if self.setTimer(text):
+                return "Timer successfully added"
+            else:
+                return "invalid input" 
 
-"""
-if __name__ == '__main__':
-    returnedText = sys.argv[1:][0]
-    alarm = Alarm()
+        elif "alarm" in text:
+            #Ex->
+            #set alarm at 20:00
+            #delete alarm
+            #get alarm
 
-    if "timer" in returnedText:
-        alarm.setTimer(returnedText)
+            dat = re.findall("(\D+)\salarm.+", text)
+            if "set" in dat:
+                if self.setAlarm(text):
+                    return "Alarm successfully added"
+                else:
+                    return "invalid input"  
 
-    elif "alarm" in returnedText:
-        text = re.findall("(\D+)\salarm.+", returnedText)
+            elif "delete" in dat:
+                if self.deleteAlarm():
+                    return "Alarm successfully deleted"
+                else:
+                    return "invalid input"
 
-        if "set" in text:
-            alarm.setAlarm(returnedText)
-            print "Alarm successfully added"
-        elif "delete" in text:
-            alarm.deleteAlarm()
-            print "Alarm successfully deleted"
-        else:
-            print alarm.getAlarm
-
-    else:
-        print "invalid input"    
-
-    count = 0
-    #Test
-    while True:
-        print datetime.today().strftime("It's %I:%M:%S%p")
-        print alarm.getAlarm
-        time.sleep(1)
-
-        if count == 5:
-            alarm.deleteAlarm()
-        count = count+1
-        """
+            else:
+                al = self.getAlarm
+                if al:
+                    return al
+                else:
+                    return "Not alarm set"
 
