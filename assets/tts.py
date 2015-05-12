@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import os
 import tempfile
@@ -20,7 +21,11 @@ class TTSEngine:
         self.language = language
     
     def play(self,filename):             
+<<<<<<< HEAD:client/tts.py
         cmd = [PLAYER, str(filename)]
+=======
+        cmd = ['mpg321', str(filename)]
+>>>>>>> f0af97d0442702cb56fed62cb96b08222dddde06:assets/tts.py
         with tempfile.TemporaryFile() as f:
             subprocess.call(cmd, stdout=f, stderr=f)
             f.seek(0)
@@ -33,9 +38,14 @@ class TTSEngine:
         tts.save(tmpfile)
         self.play(tmpfile)
         os.remove(tmpfile)
-        
+              
+"""        
 if __name__ == '__main__':
-
     engine = TTSEngine()
+<<<<<<< HEAD:client/tts.py
 
     engine.say("This is a debuging test")
+=======
+    engine.say("This is a debuging test")
+"""
+>>>>>>> f0af97d0442702cb56fed62cb96b08222dddde06:assets/tts.py
