@@ -1,20 +1,7 @@
 #!/usr/bin/python
-#
-# Copyright 2014 Google Inc. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
     
 import sys
+import os
 from oauth2client import client
 
 import gflags
@@ -30,16 +17,24 @@ import pytz
 from dateutil.parser import parse
 import re
 
+import tts,stt
 
-#if __name__ == '__main__':
 
 class CalendarAPI:
-    def __init__(self,client_id,client_secret,APIkey,calendarId):
+    def __init__(self,client_id = '71057278230-krkhag877g29lng5rp63qg9bhvoellcn.apps.googleusercontent.com'
+                    ,client_secret = 'CCaXElmLd89gBUA202L9717t'
+                    ,APIkey = 'AIzaSyBg0V344J5CuQP_lsfQcIAx0ajv6BOBTfw'
+                    ,calendarId = '0igpmusm3sju2hpmi8a5a382rg@group.calendar.google.com' ):
+
+        # Your OAuth 2.0 Client ID and Secret. If you do not have an ID and Secret yet,
+        # please go to https://console.developers.google.com and create a set.
+
+        self.stt = stt.STTEngine()
+        self.tts = tts.TTSEngine()
 
         cest = pytz.timezone('Europe/Madrid')
         self.now = datetime.now(tz=cest) # timezone?
         self.dt = parse(str(self.now))
-
 
         self.calendarId = calendarId
         self.weekDay = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
@@ -65,18 +60,11 @@ class CalendarAPI:
         http = httplib2.Http()
         http = credentials.authorize(http)
 
-        """
-        print "Access token: " + credentials.access_token 
-        print "Refresh token: " + credentials.refresh_token
-        print "\n"
-        """
         # Build a service object for interacting with the API. Visit
         # the Google Developers Console
         # to get a developerKey for your own application.
-        service = build(serviceName='calendar', version='v3', http=http,
-                     developerKey=APIkey)
+        service = build(serviceName='calendar', version='v3', http=http, developerKey=APIkey)
         self.service = service
-
 
     def getEvents(self, text):
         #'List all' my events
@@ -356,39 +344,80 @@ class CalendarAPI:
             return False
 
 
+    def thinkCalendar(self, text):
+
+        #'' static words
+        #"" input words
+        #general questions
+            #the 'plans' or 'sheduler' of this 'week' or this 'month'
+            #Acces to the 'calendar'
+                #Assistant: Accesing to calendar, what do you want to do?
+                    #Add:
+                        #'Add' new event 'called' "asdfgh" 'for' "this tuesday" (not necessary) 'at' "15:00" of "2 hours"
+                        #'Add' new event 'called' "asdsfdg" 'for' "the 7 of march" (not necessary) 'at' "19:00" to "20:00"
+                    #List or tell me or get
+                        #'List all' my events
+                        #'List' the events of this 'week'
+                        #'List' the events of this 'month'
+                        #'List' the events of "2" 'days'
+                        #Get all the elements
+                        #Get elements of friday
+                    #Delete: -> Ask to confirm the delete
+                        #'Delete all' my events 
+                        #'Delete all' the events of this 'week'
+                        #'Delete all' the events of this 'month'
+                        #'Delete the event' of "7 of March" at "15:00"
+
+                
+        self.tts.say("What operation do you want to do?")
+        print "What operation do you want to do?" + "\n"
+
+        os.system("sox -d voice1.flac silence 1 0.1 5% 1 1.0 5%")
+        text = self.stt.transcript("voice1.flac").lower()
+        print text 
+
+        if "add" in text:
+            if self.setEvents(text):
+                #Convert text of 'add event' to 'get events' 
+                text = text.replace('for', 'of')
+                #Delete unnecesary text
+                text = re.findall("of\s.+",text)[0]
+                
+                #Get event to check if is saved
+                events = self.getEvents(text)
+                for event in events['items']:
+                    if event:
+                        dt = parse(event['start']['dateTime'])
+                        dtf = parse(event['end']['dateTime'])
+                        textEvent = "Event called: "+event['summary']+" at "+dt.strftime('%A')+", "+str(dt.day)+" of "+dt.strftime('%B')+" at "+dt.strftime('%H')+":"+dt.strftime('%M')+" to "+dtf.strftime('%H')+":"+dtf.strftime('%M')
+                        textEvent += ". Successfully added"         
+                        return textEvent                
+                    else:
+                        return "Not added"     
+            else:
+                return "Incorrect input"
+
+        elif "delete" in text:
+            if self.deleteEvents(text):
+                return "successfully deteled"
+
+            else:
+                return "Nothing to detele"
+
+        else:
+            textEvent = ""
+            events = self.getEvents(text)
+            for event in events['items']:
+                dt = parse(event['start']['dateTime'])
+                dtf = parse(event['end']['dateTime'])
+                textEvent += "Event called: "+event['summary']+" at "+dt.strftime('%A')+", "+str(dt.day)+" of "+dt.strftime('%B')+" at "+dt.strftime('%H')+":"+dt.strftime('%M')+" to "+dtf.strftime('%H')+":"+dtf.strftime('%M') + "\n"
+            return textEvent
+            
+                
+
+
 """
 if __name__ == '__main__':
-    # Your OAuth 2.0 Client ID and Secret. If you do not have an ID and Secret yet,
-    # please go to https://console.developers.google.com and create a set.
-    CLIENT_ID = '71057278230-krkhag877g29lng5rp63qg9bhvoellcn.apps.googleusercontent.com'
-    CLIENT_SECRET = 'CCaXElmLd89gBUA202L9717t'
-    APIkey = 'AIzaSyBg0V344J5CuQP_lsfQcIAx0ajv6BOBTfw'
-    calendarId='0igpmusm3sju2hpmi8a5a382rg@group.calendar.google.com'
-
-    calendar = CalendarAPI(CLIENT_ID,CLIENT_SECRET,APIkey,calendarId)
-
-    #'' static words
-    #"" input words
-    #general questions
-        #the 'plans' or 'sheduler' of this 'week' or this 'month'
-        #Acces to the 'calendar'
-            #Assistant: Accesing to calendar, what do you want to do?
-                #Add:
-                  #'Add' new event 'called' "asdfgh" 'for' "this tuesday" (not necessary) 'at' "15:00" of "2 hours"
-                  #'Add' new event 'called' "asdsfdg" 'for' "the 7 of march" (not necessary) 'at' "19:00" to "20:00"
-                #List or tell me or get
-                  #'List all' my events
-                  #'List' the events of this 'week'
-                  #'List' the events of this 'month'
-                  #'List' the events of "2" 'days'
-                  #'List' the events of "today"
-                #Delete: -> Ask to confirm the delete
-                  #'Delete all' my events 
-                  #'Delete all' the events of this 'week'
-                  #'Delete all' the events of this 'month'
-                  #'Delete the event' of "7 of March" at "15:00"
-                  #'Delete the events' of "today"
-
 
     text0 = 'Add new event called prueb1 for this tuesday at 19:00 to 21:00'
     text1 = 'Add new event called my lunch for the 10 of march at 19:00 of 1 hours'
