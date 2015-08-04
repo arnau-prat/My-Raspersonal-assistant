@@ -24,25 +24,13 @@ class Microphone:
 
     def passiveListen(self,persona):
 
-<<<<<<< HEAD:client/mic.py
-        CHUNK = 1024
-        FORMAT = pyaudio.paInt16
-        CHANNELS = 1
-        RATE = 16000
-        RECORD_SECONDS = 5
-=======
         CHUNK = 1024; RATE = 16000; THRESHOLD = 30; LISTEN_TIME = 5
->>>>>>> f0af97d0442702cb56fed62cb96b08222dddde06:assets/mic.py
 
         didDetect = False
         
         # prepare recording stream
         p = pyaudio.PyAudio()
-<<<<<<< HEAD:client/mic.py
-        stream = p.open(format=FORMAT, channels = 1, rate = RATE, input = True, input_device_index = 0, frames_per_buffer = CHUNK)
-=======
         stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=CHUNK)
->>>>>>> f0af97d0442702cb56fed62cb96b08222dddde06:assets/mic.py
 
         # stores the audio data
         all =[]

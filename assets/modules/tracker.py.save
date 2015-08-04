@@ -3,30 +3,27 @@ import sys
 import time
 import serial
 import string
-import threading
+from time import sleep
 
-class Tracker(threading.Thread):
+def tracker:
 
 	def __init__(self):
-		super(Tracker, self).__init__()
-		self.arduino=serial.Serial("/dev/ttyAMA0",9600)
+		self.arduino = serial.Serial("/dev/ttyAMA0", 9600)
 		self.arduino.isOpen()
 		self.cascPath = "../../faces.xml"
-		self.faceCascade = cv2.CascadeClassifier(self.cascPath)
+		self.faceCascade = cv2.CascadeClassifier(cascPath)
 
-	def run(self):
-		self.video_capture = cv2.VideoCapture(0)
+	def start(self, text):
 		self.arduino.write('w')
-		cv2.destroyAllWindows()
-
+		sleep(1)
 		while True:
     			# Capture frame-by-frame
     			ret, frame = self.video_capture.read()
     			frame = cv2.resize(frame,(140,105))
     
-   			gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    			gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    			faces = self.faceCascade.detectMultiScale(
+    			faces = faceCascade.detectMultiScale(
         			gray,
         			scaleFactor=1.1,
         			minNeighbors=1,
@@ -40,20 +37,22 @@ class Tracker(threading.Thread):
 				midFaceX = x+(w/2)
         			midScreenX = 70                 
         			if(midFaceX < midScreenX - 15):
-					test.write('r')
+        				servoPanPosition = 'a'
+					arduino.write(servoPanPosition)
                 			print "right\n"
 				elif(midFaceX > midScreenX + 15):
-					test.write('l')
+                			servoPanPosition = 'c'
+					test.write(servoPanPosition)
                 			print "left\n"
 				else:
+					servoPanPosition = 'b'
 					print "middle\n"
-		     
-    			cv2.imshow('Video', frame)
-			
-			
-
-	def stop(self):
+		               
 		
-		self.arduino.write('s')
-		self.video_capture.release()
-		cv2.destroyAllWindows()
+    			cv2.imwrite("/home/pi/Desktop/im.jpg", frame)	
+	
+    			cv2.imshow('Video', frame)
+
+    		def stop(self,text):
+			self.video_capture.release()
+			cv2.destroyAllWindows()
