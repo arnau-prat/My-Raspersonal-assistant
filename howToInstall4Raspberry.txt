@@ -1,0 +1,108 @@
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python-pip
+
+#Change name of raspberrypi:
+sudo vim /etc/hosts
+sudo vim etc\hostname
+sudo /etc/init.d/hostname.sh
+
+#Generate RSA keys:
+ssh-keygen -t rsa -C "pi@raspberrypi"
+#Add public key from the client that wants to connect to 
+#the authorized key file of the receiver.
+cat /home/pi/.ssh/id_rsa.pub >> /home/pi/.ssh/authorized_keys
+#From A, send public key to b and append to the list
+cat .ssh/id_rsa.pub | ssh b@B 'cat >> .ssh/authorized_keys'
+
+install fortran:
+sudo apt-get install gfortran
+mkdir /home/pi/fortran
+
+install Screen:
+sudo apt-get install screen
+#In directori home/pi
+touch .screenrc
+#add the following configuration:
+vbell off
+vbell_msg ""
+hardstatus on
+hardstatus alwayslastline
+#Use: info screen "String Escapes" to style your screen
+hardstatus string "%{B}%-Lw%{r}%50>%n%f*%t%{-}%+Lw%<"
+def monitor on
+term screen-256color
+shelltitle Window
+screen bash
+
+#Run bash commands backgroud:
+screen
+#Rename ->  Ctrl A + Shift A.
+#Second screen -> ctrl a + c
+#go back to original bash -> ctrl a + d
+#go to screen bash again -> screen -r
+
+sudo apt-get install pip
+sudo apt-get install aptitude
+
+#Install MPICH
+mkdir mpich3
+mkdir build install
+wget http://www.mpich.org/static/downloads/3.0.4/mpich-3.0.4.tar.gz
+tar xvfz mpich-3.0.4.tar.gz
+cd build
+/home/pi/mpich3/mpich-3.0.4/configure -prefix=/home/pi/mpich3/install
+make
+make install
+Edit text in -> /home/pi/.profile
+text to edit -> # MPI 
+	        export PATH="$PATH:/home/pi/mpich3/install/bin"
+#Test MPICH:
+#You should have a file named machinefile or pifile (example screenshot below) 
+#that stores the IP addresses of all the nodes in the network.
+mpiexec -f pifile -n 2 ~/mpich3/build/examples/cpi
+#Add python:
+sudo env MPICC="/home/pi/mpich3/install/bin/mpicc" aptitude install python-mpi4py
+#Test MPICH:
+mpiexec -machinefile ~/pifile -n 2 python helloworld.py
+
+#Code examples in demos
+wget https://mpi4py.googlecode.com/files/mpi4py-1.3.1.tar.gz
+
+#Install openCV 2.4.9 
+#http://www.samontab.com/web/2014/06/installing-opencv-2-4-9-in-ubuntu-14-04-lts/
+
+#Install audio drivers
+http://cagewebdev.com/index.php/raspberry-pi-getting-audio-working/
+
+#Install stt
+sudo apt-get install sox libsox-fmt-all libsox-dev
+cd
+export AUDIODEV=hw:1,0
+export AUDIODRIVER=alsa
+
+#Install tts
+http://electronut.in/making-the-raspberry-pi-speak/
+
+#install packages
+sudo pip install 
+pytz
+wolframalpha
+httplib2
+dropbox
+python-dateutil
+
+#Install calendar API's
+sudo pip install --upgrade google-api-python-client
+
+pip install oauth2client==1.4.12
+
+
+
+#To copy a file from B to A while logged into B:
+scp /path/to/file username@a:/path/to/destination
+#To copy a file from B to A while logged into A:
+scp username@b:/path/to/file /path/to/destination
+
+
+
